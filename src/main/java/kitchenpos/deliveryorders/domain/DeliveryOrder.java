@@ -54,43 +54,30 @@ public class DeliveryOrder {
   }
 
   public void accept(final KitchenridersClient kitchenridersClient) {
-    if (this.status != DeliveryOrderStatus.WAITING) {
-      throw new IllegalStateException();
-    }
+    this.checkOrThrow(DeliveryOrderStatus.WAITING);
+
     final BigDecimal sum = this.orderLineItems.totalPrice();
     kitchenridersClient.requestDelivery(this.id, sum, this.getDeliveryAddress());
     this.status = DeliveryOrderStatus.ACCEPTED;
   }
 
   public void serve() {
-    if (this.status != DeliveryOrderStatus.ACCEPTED) {
-      throw new IllegalStateException();
-    }
-
+    this.checkOrThrow(DeliveryOrderStatus.ACCEPTED);
     this.status = DeliveryOrderStatus.SERVED;
   }
 
   public void startDelivery() {
-    if (this.status != DeliveryOrderStatus.SERVED) {
-      throw new IllegalStateException();
-    }
-
+    this.checkOrThrow(DeliveryOrderStatus.SERVED);
     this.status = DeliveryOrderStatus.DELIVERING;
   }
 
   public void completeDelivery() {
-    if (this.status != DeliveryOrderStatus.DELIVERING) {
-      throw new IllegalStateException();
-    }
-
+    this.checkOrThrow(DeliveryOrderStatus.DELIVERING);
     this.status = DeliveryOrderStatus.DELIVERED;
   }
 
   public void complete() {
-    if (this.status != DeliveryOrderStatus.DELIVERED) {
-      throw new IllegalStateException();
-    }
-
+    this.checkOrThrow(DeliveryOrderStatus.DELIVERED);
     this.status = DeliveryOrderStatus.COMPLETED;
   }
 
@@ -116,5 +103,11 @@ public class DeliveryOrder {
 
   public String getDeliveryAddress() {
     return deliveryAddress.getDeliveryAddress();
+  }
+
+  private void checkOrThrow(final DeliveryOrderStatus status) {
+    if (this.status != status) {
+      throw new IllegalStateException("주문 상태가 " + status.name() + "가 아닙니다.");
+    }
   }
 }

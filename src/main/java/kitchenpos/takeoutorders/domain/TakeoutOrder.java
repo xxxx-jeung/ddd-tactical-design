@@ -39,26 +39,17 @@ public class TakeoutOrder {
   }
 
   public void accepted() {
-    if (this.status != TakeoutOrderStatus.WAITING) {
-      throw new IllegalStateException();
-    }
-
+    this.checkOrThrow(TakeoutOrderStatus.WAITING);
     this.status = TakeoutOrderStatus.ACCEPTED;
   }
 
   public void serve() {
-    if (this.status != TakeoutOrderStatus.ACCEPTED) {
-      throw new IllegalStateException();
-    }
-
+    this.checkOrThrow(TakeoutOrderStatus.ACCEPTED);
     this.status = TakeoutOrderStatus.SERVED;
   }
 
   public void completed() {
-    if (this.status != TakeoutOrderStatus.SERVED) {
-      throw new IllegalStateException();
-    }
-
+    this.checkOrThrow(TakeoutOrderStatus.SERVED);
     this.status = TakeoutOrderStatus.COMPLETED;
   }
 
@@ -80,5 +71,11 @@ public class TakeoutOrder {
 
   public List<TakeoutOrderLineItem> getOrderLineItems() {
     return orderLineItems.getOrderLineItems();
+  }
+
+  private void checkOrThrow(TakeoutOrderStatus status) {
+    if (this.status != status) {
+      throw new IllegalStateException("주문 상태가 " + status.name() + "가 아닙니다.");
+    }
   }
 }

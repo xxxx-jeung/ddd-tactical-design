@@ -51,26 +51,17 @@ public class EatInOrder {
   }
 
   public void accepted() {
-    if (this.status != EatInOrderStatus.WAITING) {
-      throw new IllegalStateException();
-    }
-
+    this.checkOrThrow(EatInOrderStatus.WAITING);
     this.status = EatInOrderStatus.ACCEPTED;
   }
 
   public void serve() {
-    if (this.status != EatInOrderStatus.ACCEPTED) {
-      throw new IllegalStateException();
-    }
-
+    this.checkOrThrow(EatInOrderStatus.ACCEPTED);
     this.status = EatInOrderStatus.SERVED;
   }
 
   public void completed() {
-    if (this.status != EatInOrderStatus.SERVED) {
-      throw new IllegalStateException();
-    }
-
+    this.checkOrThrow(EatInOrderStatus.SERVED);
     this.status = EatInOrderStatus.COMPLETED;
     this.orderTable.clear();
   }
@@ -97,5 +88,11 @@ public class EatInOrder {
 
   public EatInOrderTable getOrderTable() {
     return orderTable;
+  }
+
+  private void checkOrThrow(final EatInOrderStatus status) {
+    if (this.status != status) {
+      throw new IllegalStateException("주문 상태가 " + status.name() + "가 아닙니다.");
+    }
   }
 }

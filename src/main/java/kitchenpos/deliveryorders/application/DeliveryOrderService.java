@@ -38,8 +38,7 @@ public class DeliveryOrderService {
 
   @Transactional
   public DeliveryOrderResponseDto accept(final UUID orderId) {
-    final DeliveryOrder order =
-        orderRepository.findById(orderId).orElseThrow(NoSuchElementException::new);
+    final DeliveryOrder order = this.getDeliveryOrder(orderId);
 
     order.accept(kitchenridersClient);
     return DeliveryOrderResponseDto.create(order);
@@ -47,16 +46,14 @@ public class DeliveryOrderService {
 
   @Transactional
   public DeliveryOrderResponseDto serve(final UUID orderId) {
-    final DeliveryOrder order =
-        orderRepository.findById(orderId).orElseThrow(NoSuchElementException::new);
+    final DeliveryOrder order = this.getDeliveryOrder(orderId);
     order.serve();
     return DeliveryOrderResponseDto.create(order);
   }
 
   @Transactional
   public DeliveryOrderResponseDto startDelivery(final UUID orderId) {
-    final DeliveryOrder order =
-        orderRepository.findById(orderId).orElseThrow(NoSuchElementException::new);
+    final DeliveryOrder order = this.getDeliveryOrder(orderId);
 
     order.startDelivery();
     return DeliveryOrderResponseDto.create(order);
@@ -64,8 +61,7 @@ public class DeliveryOrderService {
 
   @Transactional
   public DeliveryOrderResponseDto completeDelivery(final UUID orderId) {
-    final DeliveryOrder order =
-        orderRepository.findById(orderId).orElseThrow(NoSuchElementException::new);
+    final DeliveryOrder order = this.getDeliveryOrder(orderId);
 
     order.completeDelivery();
     return DeliveryOrderResponseDto.create(order);
@@ -73,8 +69,7 @@ public class DeliveryOrderService {
 
   @Transactional
   public DeliveryOrderResponseDto complete(final UUID orderId) {
-    final DeliveryOrder order =
-        orderRepository.findById(orderId).orElseThrow(NoSuchElementException::new);
+    final DeliveryOrder order = this.getDeliveryOrder(orderId);
     order.complete();
     return DeliveryOrderResponseDto.create(order);
   }
@@ -102,5 +97,9 @@ public class DeliveryOrderService {
       deliveryOrderLineItems.add(DeliveryOrderLineItem.createItem(quantity, menuId, price));
     }
     return deliveryOrderLineItems;
+  }
+
+  private DeliveryOrder getDeliveryOrder(UUID orderId) {
+    return orderRepository.findById(orderId).orElseThrow(NoSuchElementException::new);
   }
 }

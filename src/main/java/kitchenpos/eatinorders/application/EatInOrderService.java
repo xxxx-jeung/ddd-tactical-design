@@ -31,7 +31,7 @@ public class EatInOrderService {
         request.getEatInOrderLineItemRequestDtos();
 
     final List<EatInOrderLineItem> eatInOrderLineItems =
-        this.createTakeoutOrderLineItems(eatInOrderLineItemRequestDtos);
+        this.createEatInOrderLineItems(eatInOrderLineItemRequestDtos);
 
     final EatInOrderTable orderTable = findOrderTable(request.getOrderTableId());
 
@@ -43,24 +43,21 @@ public class EatInOrderService {
   @Transactional
   public EatInOrderResponseDto accept(final UUID orderId) {
 
-    final EatInOrder eatInOrder =
-        orderRepository.findById(orderId).orElseThrow(NoSuchElementException::new);
+    final EatInOrder eatInOrder = this.getEatInOrder(orderId);
     eatInOrder.accepted();
     return EatInOrderResponseDto.create(eatInOrder);
   }
 
   @Transactional
   public EatInOrderResponseDto serve(final UUID orderId) {
-    final EatInOrder eatInOrder =
-        orderRepository.findById(orderId).orElseThrow(NoSuchElementException::new);
+    final EatInOrder eatInOrder = this.getEatInOrder(orderId);
     eatInOrder.serve();
     return EatInOrderResponseDto.create(eatInOrder);
   }
 
   @Transactional
   public EatInOrderResponseDto complete(final UUID orderId) {
-    final EatInOrder eatInOrder =
-        orderRepository.findById(orderId).orElseThrow(NoSuchElementException::new);
+    final EatInOrder eatInOrder = this.getEatInOrder(orderId);
     eatInOrder.completed();
     return EatInOrderResponseDto.create(eatInOrder);
   }
@@ -70,7 +67,7 @@ public class EatInOrderService {
     return orderRepository.findAll().stream().map(EatInOrderResponseDto::create).toList();
   }
 
-  private List<EatInOrderLineItem> createTakeoutOrderLineItems(
+  private List<EatInOrderLineItem> createEatInOrderLineItems(
       final List<EatInOrderLineItemRequestDto> eatInOrderLineItemRequestDtos) {
 
     if (Objects.isNull(eatInOrderLineItemRequestDtos)) {
@@ -98,5 +95,11 @@ public class EatInOrderService {
     }
 
     return orderTable;
+  }
+
+  private EatInOrder getEatInOrder(final UUID orderId) {
+    return orderRepository
+        .findById(orderId)
+        .orElseThrow(() -> new NoSuchElementException("주문이 존재하지 않습니다."));
   }
 }

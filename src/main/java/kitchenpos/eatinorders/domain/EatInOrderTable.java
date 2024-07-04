@@ -36,34 +36,22 @@ public class EatInOrderTable {
       throw new IllegalStateException();
     }
 
-    if (numberOfGuests < 0) {
-      throw new IllegalArgumentException();
-    }
+    this.validatorSitNumberOrGuests(numberOfGuests);
 
     this.numberOfGuests = new NumberOfGuests(numberOfGuests);
     this.occupied = new Occupied(true);
   }
 
   public void changeNumberOfGuests(final int numberOfGuests) {
-    if (!this.occupied.isOccupied()) {
-      throw new IllegalStateException();
-    }
-
-    if (numberOfGuests < 0) {
-      throw new IllegalArgumentException();
-    }
+    this.validatorSitTable();
+    this.validatorSitNumberOrGuests(numberOfGuests);
 
     this.numberOfGuests = new NumberOfGuests(numberOfGuests);
   }
 
   public void clear() {
-    if (!this.occupied.isOccupied()) {
-      throw new IllegalStateException();
-    }
-
-    if (this.numberOfGuests.getNumberOfGuests() < 0) {
-      throw new IllegalArgumentException();
-    }
+    this.validatorSitTable();
+    this.validatorSitNumberOrGuests(this.numberOfGuests.getNumberOfGuests());
 
     this.numberOfGuests = new NumberOfGuests(0);
     this.occupied = new Occupied(false);
@@ -83,5 +71,17 @@ public class EatInOrderTable {
 
   public boolean getOccupied() {
     return occupied.isOccupied();
+  }
+
+  private void validatorSitTable() {
+    if (!this.occupied.isOccupied()) {
+      throw new IllegalStateException();
+    }
+  }
+
+  private void validatorSitNumberOrGuests(int numberOfGuests) {
+    if (numberOfGuests < 0) {
+      throw new IllegalArgumentException();
+    }
   }
 }

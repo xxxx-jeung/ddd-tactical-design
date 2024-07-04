@@ -36,8 +36,7 @@ public class TakeoutOrderService {
   @Transactional
   public TakeoutOrderResponseDto accept(final UUID orderId) {
 
-    final TakeoutOrder takeoutOrder =
-        orderRepository.findById(orderId).orElseThrow(NoSuchElementException::new);
+    final TakeoutOrder takeoutOrder = this.getTakeoutOrder(orderId);
     takeoutOrder.accepted();
     return TakeoutOrderResponseDto.create(takeoutOrder);
   }
@@ -45,8 +44,7 @@ public class TakeoutOrderService {
   @Transactional
   public TakeoutOrderResponseDto serve(final UUID orderId) {
 
-    final TakeoutOrder takeoutOrder =
-        orderRepository.findById(orderId).orElseThrow(NoSuchElementException::new);
+    final TakeoutOrder takeoutOrder = this.getTakeoutOrder(orderId);
     takeoutOrder.serve();
     return TakeoutOrderResponseDto.create(takeoutOrder);
   }
@@ -54,8 +52,7 @@ public class TakeoutOrderService {
   @Transactional
   public TakeoutOrderResponseDto complete(final UUID orderId) {
 
-    final TakeoutOrder takeoutOrder =
-        orderRepository.findById(orderId).orElseThrow(NoSuchElementException::new);
+    final TakeoutOrder takeoutOrder = this.getTakeoutOrder(orderId);
     takeoutOrder.completed();
     return TakeoutOrderResponseDto.create(takeoutOrder);
   }
@@ -84,5 +81,9 @@ public class TakeoutOrderService {
       takeoutOrderLineItems.add(TakeoutOrderLineItem.createItem(quantity, menuId));
     }
     return takeoutOrderLineItems;
+  }
+
+  private TakeoutOrder getTakeoutOrder(UUID orderId) {
+    return orderRepository.findById(orderId).orElseThrow(NoSuchElementException::new);
   }
 }
