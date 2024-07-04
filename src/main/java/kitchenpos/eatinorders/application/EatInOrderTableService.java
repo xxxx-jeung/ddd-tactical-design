@@ -31,14 +31,14 @@ public class EatInOrderTableService {
 
   @Transactional
   public EatInOrderTableResponse sit(final UUID orderTableId, final int numberOfGuests) {
-    final EatInOrderTable orderTable = getEatInOrderTable(orderTableId);
+    final EatInOrderTable orderTable = this.getEatInOrderTable(orderTableId);
     orderTable.sit(numberOfGuests);
     return EatInOrderTableResponse.create(orderTable);
   }
 
   @Transactional
   public EatInOrderTableResponse clear(final UUID orderTableId) {
-    final EatInOrderTable orderTable = getEatInOrderTable(orderTableId);
+    final EatInOrderTable orderTable = this.getEatInOrderTable(orderTableId);
 
     this.findOrderStatus(orderTable);
 
@@ -49,7 +49,7 @@ public class EatInOrderTableService {
   @Transactional
   public EatInOrderTableResponse changeNumberOfGuests(
       final UUID orderTableId, final int numberOfGuests) {
-    final EatInOrderTable orderTable = getEatInOrderTable(orderTableId);
+    final EatInOrderTable orderTable = this.getEatInOrderTable(orderTableId);
     orderTable.changeNumberOfGuests(numberOfGuests);
     return EatInOrderTableResponse.create(orderTable);
   }

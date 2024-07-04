@@ -14,10 +14,11 @@ import kitchenpos.deliveryorders.domain.DeliveryOrder;
 import kitchenpos.deliveryorders.domain.DeliveryOrderRepository;
 import kitchenpos.deliveryorders.domain.DeliveryOrderStatus;
 import kitchenpos.deliveryorders.domain.DeliveryOrderType;
+import kitchenpos.deliveryorders.infra.DeliveryMenuClientInterface;
+import kitchenpos.deliveryorders.infra.DeliveryMenuClientInterfaceImpl;
 import kitchenpos.menus.domain.menu.Menu;
 import kitchenpos.menus.domain.menu.MenuRepository;
 import kitchenpos.menus.tobe.application.InMemoryMenuRepository;
-import kitchenpos.products.tobe.application.FakeDeliveryOrderApplicationEventPublisher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,14 +27,13 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.context.ApplicationEventPublisher;
 
 class DeliveryOrderServiceTest {
   private DeliveryOrderRepository orderRepository;
   private MenuRepository menuRepository;
   private FakeKitchenridersClient kitchenridersClient;
   private DeliveryOrderService orderService;
-  private ApplicationEventPublisher applicationEventPublisher;
+  private DeliveryMenuClientInterface deliveryMenuClientInterface;
 
   private static List<Arguments> orderLineItems() {
     return Arrays.asList(
@@ -68,9 +68,9 @@ class DeliveryOrderServiceTest {
     orderRepository = new InMemoryDeliveryOrderRepository();
     menuRepository = new InMemoryMenuRepository();
     kitchenridersClient = new FakeKitchenridersClient();
-    applicationEventPublisher = new FakeDeliveryOrderApplicationEventPublisher(menuRepository);
+    deliveryMenuClientInterface = new DeliveryMenuClientInterfaceImpl(menuRepository);
     orderService =
-        new DeliveryOrderService(orderRepository, kitchenridersClient, applicationEventPublisher);
+        new DeliveryOrderService(orderRepository, kitchenridersClient, deliveryMenuClientInterface);
   }
 
   @DisplayName("1개 이상의 등록된 메뉴로 배달 주문을 등록할 수 있다.")

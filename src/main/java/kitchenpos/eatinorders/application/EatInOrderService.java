@@ -4,8 +4,7 @@ import java.math.BigDecimal;
 import java.util.*;
 import kitchenpos.eatinorders.domain.*;
 import kitchenpos.eatinorders.domain.EatInOrder;
-import kitchenpos.takeoutorders.domain.MenuPriceFoundEvent;
-import org.springframework.context.ApplicationEventPublisher;
+import kitchenpos.eatinorders.infra.EatInMenuClientInterface;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,15 +12,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class EatInOrderService {
   private final EatInOrderRepository orderRepository;
   private final EatInOrderTableRepository orderTableRepository;
-  private final ApplicationEventPublisher applicationEventPublisher;
+  private final EatInMenuClientInterface eatInMenuClientInterface;
 
   public EatInOrderService(
-      final EatInOrderRepository orderRepository,
-      final EatInOrderTableRepository orderTableRepository,
-      final ApplicationEventPublisher applicationEventPublisher) {
+          final EatInOrderRepository orderRepository,
+          final EatInOrderTableRepository orderTableRepository,
+          final EatInMenuClientInterface eatInMenuClientInterface) {
     this.orderRepository = orderRepository;
     this.orderTableRepository = orderTableRepository;
-    this.applicationEventPublisher = applicationEventPublisher;
+    this.eatInMenuClientInterface = eatInMenuClientInterface;
   }
 
   @Transactional
@@ -81,7 +80,7 @@ public class EatInOrderService {
       final BigDecimal price = eatInOrderLineItemRequestDto.getPrice();
       final long quantity = eatInOrderLineItemRequestDto.getQuantity();
 
-      applicationEventPublisher.publishEvent(new MenuPriceFoundEvent(this, menuId, price));
+      eatInMenuClientInterface.validatorMenuCheckMethod(menuId, price);
       eatInOrderLineItems.add(EatInOrderLineItem.createItem(quantity, menuId));
     }
     return eatInOrderLineItems;

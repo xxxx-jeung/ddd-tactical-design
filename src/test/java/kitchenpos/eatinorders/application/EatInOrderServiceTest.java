@@ -13,24 +13,24 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import kitchenpos.eatinorders.domain.*;
+import kitchenpos.eatinorders.infra.EatInMenuClientInterface;
+import kitchenpos.eatinorders.infra.EatInMenuClientInterfaceImpl;
 import kitchenpos.menus.domain.menu.Menu;
 import kitchenpos.menus.domain.menu.MenuRepository;
 import kitchenpos.menus.tobe.application.InMemoryMenuRepository;
-import kitchenpos.products.tobe.application.FakeEatInOrderApplicationEventPublisher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.context.ApplicationEventPublisher;
 
 class EatInOrderServiceTest {
   private EatInOrderRepository orderRepository;
   private MenuRepository menuRepository;
   private EatInOrderTableRepository orderTableRepository;
   private EatInOrderService orderService;
-  private ApplicationEventPublisher applicationEventPublisher;
+  private EatInMenuClientInterface eatInMenuClientInterface;
 
   private static List<Arguments> orderLineItems() {
     return Arrays.asList(
@@ -50,9 +50,9 @@ class EatInOrderServiceTest {
     orderRepository = new InMemoryEatInOrderRepository();
     menuRepository = new InMemoryMenuRepository();
     orderTableRepository = new InMemoryEatInOrderTableRepository();
-    applicationEventPublisher = new FakeEatInOrderApplicationEventPublisher(menuRepository);
+    eatInMenuClientInterface = new EatInMenuClientInterfaceImpl(menuRepository);
     orderService =
-        new EatInOrderService(orderRepository, orderTableRepository, applicationEventPublisher);
+        new EatInOrderService(orderRepository, orderTableRepository, eatInMenuClientInterface);
   }
 
   @DisplayName("1개 이상의 등록된 메뉴로 매장 주문을 등록할 수 있다.")

@@ -13,10 +13,11 @@ import java.util.UUID;
 import kitchenpos.menus.domain.menu.Menu;
 import kitchenpos.menus.domain.menu.MenuRepository;
 import kitchenpos.menus.tobe.application.InMemoryMenuRepository;
-import kitchenpos.products.tobe.application.FakeTakeoutOrderApplicationEventPublisher;
 import kitchenpos.takeoutorders.domain.TakeoutOrder;
 import kitchenpos.takeoutorders.domain.TakeoutOrderRepository;
 import kitchenpos.takeoutorders.domain.TakeoutOrderStatus;
+import kitchenpos.takeoutorders.infra.TakeoutMenuClientInterface;
+import kitchenpos.takeoutorders.infra.TakeoutMenuClientInterfaceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,13 +25,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.context.ApplicationEventPublisher;
 
 class TakeoutOrderServiceTest {
   private TakeoutOrderRepository orderRepository;
   private MenuRepository menuRepository;
   private TakeoutOrderService orderService;
-  private ApplicationEventPublisher applicationEventPublisher;
+  private TakeoutMenuClientInterface takeoutMenuClientInterface;
 
   private static List<Arguments> orderLineItems() {
     return Arrays.asList(
@@ -60,8 +60,8 @@ class TakeoutOrderServiceTest {
   void setUp() {
     orderRepository = new InMemoryTakeoutOrderRepository();
     menuRepository = new InMemoryMenuRepository();
-    applicationEventPublisher = new FakeTakeoutOrderApplicationEventPublisher(menuRepository);
-    orderService = new TakeoutOrderService(orderRepository, applicationEventPublisher);
+    takeoutMenuClientInterface = new TakeoutMenuClientInterfaceImpl(menuRepository);
+    orderService = new TakeoutOrderService(orderRepository, takeoutMenuClientInterface);
   }
 
   @DisplayName("1개 이상의 등록된 메뉴로 포장 주문을 등록할 수 있다.")

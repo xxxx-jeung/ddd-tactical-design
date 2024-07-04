@@ -3,21 +3,21 @@ package kitchenpos.takeoutorders.application;
 import java.math.BigDecimal;
 import java.util.*;
 import kitchenpos.takeoutorders.domain.*;
-import org.springframework.context.ApplicationEventPublisher;
+import kitchenpos.takeoutorders.infra.TakeoutMenuClientInterface;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TakeoutOrderService {
   private final TakeoutOrderRepository orderRepository;
-  private final ApplicationEventPublisher applicationEventPublisher;
+  private final TakeoutMenuClientInterface takeoutMenuClientInterface;
 
   public TakeoutOrderService(
       final TakeoutOrderRepository orderRepository,
-      ApplicationEventPublisher applicationEventPublisher) {
+      final TakeoutMenuClientInterface takeoutMenuClientInterface) {
 
     this.orderRepository = orderRepository;
-    this.applicationEventPublisher = applicationEventPublisher;
+    this.takeoutMenuClientInterface = takeoutMenuClientInterface;
   }
 
   @Transactional
@@ -77,7 +77,7 @@ public class TakeoutOrderService {
       final BigDecimal price = takeoutOrderLineItemRequestDto.getPrice();
       final long quantity = takeoutOrderLineItemRequestDto.getQuantity();
 
-      applicationEventPublisher.publishEvent(new MenuPriceFoundEvent(this, menuId, price));
+      takeoutMenuClientInterface.validatorMenuCheckMethod(menuId, price);
       takeoutOrderLineItems.add(TakeoutOrderLineItem.createItem(quantity, menuId));
     }
     return takeoutOrderLineItems;

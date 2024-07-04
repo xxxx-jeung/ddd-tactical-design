@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/api/order-tables")
 @RestController
-public class OrderTableRestController {
+public class EatInOrderTableRestController {
   private final EatInOrderTableService orderTableService;
 
-  public OrderTableRestController(final EatInOrderTableService orderTableService) {
+  public EatInOrderTableRestController(final EatInOrderTableService orderTableService) {
     this.orderTableService = orderTableService;
   }
 

@@ -3,7 +3,7 @@ package kitchenpos.deliveryorders.application;
 import java.math.BigDecimal;
 import java.util.*;
 import kitchenpos.deliveryorders.domain.*;
-import org.springframework.context.ApplicationEventPublisher;
+import kitchenpos.deliveryorders.infra.DeliveryMenuClientInterface;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,15 +11,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class DeliveryOrderService {
   private final DeliveryOrderRepository orderRepository;
   private final KitchenridersClient kitchenridersClient;
-  private final ApplicationEventPublisher applicationEventPublisher;
+  private final DeliveryMenuClientInterface deliveryMenuClientInterface;
 
   public DeliveryOrderService(
       final DeliveryOrderRepository orderRepository,
       final KitchenridersClient kitchenridersClient,
-      final ApplicationEventPublisher applicationEventPublisher) {
+      final DeliveryMenuClientInterface deliveryMenuClientInterface) {
     this.orderRepository = orderRepository;
     this.kitchenridersClient = kitchenridersClient;
-    this.applicationEventPublisher = applicationEventPublisher;
+    this.deliveryMenuClientInterface = deliveryMenuClientInterface;
   }
 
   @Transactional
@@ -93,7 +93,7 @@ public class DeliveryOrderService {
       final BigDecimal price = deliveryOrderLineItemRequestDto.getPrice();
       final long quantity = deliveryOrderLineItemRequestDto.getQuantity();
 
-      applicationEventPublisher.publishEvent(new MenuPriceFoundEvent(this, menuId, price));
+      deliveryMenuClientInterface.validatorMenuCheckMethod(menuId, price);
       deliveryOrderLineItems.add(DeliveryOrderLineItem.createItem(quantity, menuId, price));
     }
     return deliveryOrderLineItems;
