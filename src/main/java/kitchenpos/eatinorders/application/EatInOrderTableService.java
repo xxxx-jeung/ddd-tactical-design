@@ -24,21 +24,21 @@ public class EatInOrderTableService {
 
   @Transactional
   public EatInOrderTableResponse create(final String name) {
-    return EatInOrderTableResponse.create(EatInOrderTable.createOrderTable(name, 0, false));
+    final EatInOrderTable orderTable = EatInOrderTable.createOrderTable(name, 0, false);
+    orderTableRepository.save(orderTable);
+    return EatInOrderTableResponse.create(orderTable);
   }
 
   @Transactional
   public EatInOrderTableResponse sit(final UUID orderTableId, final int numberOfGuests) {
-    final EatInOrderTable orderTable =
-        orderTableRepository.findById(orderTableId).orElseThrow(NoSuchElementException::new);
+    final EatInOrderTable orderTable = getEatInOrderTable(orderTableId);
     orderTable.sit(numberOfGuests);
     return EatInOrderTableResponse.create(orderTable);
   }
 
   @Transactional
   public EatInOrderTableResponse clear(final UUID orderTableId) {
-    final EatInOrderTable orderTable =
-        orderTableRepository.findById(orderTableId).orElseThrow(NoSuchElementException::new);
+    final EatInOrderTable orderTable = getEatInOrderTable(orderTableId);
 
     this.findOrderStatus(orderTable);
 
@@ -49,8 +49,7 @@ public class EatInOrderTableService {
   @Transactional
   public EatInOrderTableResponse changeNumberOfGuests(
       final UUID orderTableId, final int numberOfGuests) {
-    final EatInOrderTable orderTable =
-        orderTableRepository.findById(orderTableId).orElseThrow(NoSuchElementException::new);
+    final EatInOrderTable orderTable = getEatInOrderTable(orderTableId);
     orderTable.changeNumberOfGuests(numberOfGuests);
     return EatInOrderTableResponse.create(orderTable);
   }
@@ -65,5 +64,9 @@ public class EatInOrderTableService {
     if (orderRepository.existsByOrderTableAndStatusNot(orderTable, EatInOrderStatus.COMPLETED)) {
       throw new IllegalStateException();
     }
+  }
+
+  private EatInOrderTable getEatInOrderTable(UUID orderTableId) {
+    return orderTableRepository.findById(orderTableId).orElseThrow(NoSuchElementException::new);
   }
 }
